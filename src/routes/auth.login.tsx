@@ -1,8 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { firebaseAuth } from "@/integrations/firebase/client";
+import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/site/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,7 +27,8 @@ function LoginPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(firebaseAuth, email, password);
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
       toast.success("Welcome back.");
       nav({ to: "/" });
     } catch (err) {
@@ -37,6 +37,7 @@ function LoginPage() {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen">
